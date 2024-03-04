@@ -65,14 +65,14 @@ Important: this application uses various AWS services and there are costs associ
 
 ### Overview
 
-This pattern deploys an Amazon API Gateway REST API with the following routes: `POST /register`, `POST /login`, `GET` and `POST /bedrock`. It includes a Amazon Cognito User Pool and Lambdas to handle requests from the API Gateway. The API Gateway allows CORS for all origins and methods, incorporates an Usage Plan, and has throttle and quota limits for the `/bedrock` endpoint. The `/bedrock` endpoint allows access to Amazon Bedrock Foundation models.
+This pattern deploys an Amazon API Gateway REST API with the following routes: `POST /register`, `POST /login`, `GET` and `POST /bedrock`. It includes an Amazon Cognito User Pool and Lambdas to handle requests from the API Gateway. The API Gateway allows CORS for all origins and methods, incorporates an Usage Plan, and has throttle and quota limits for the `/bedrock` endpoint. The `/bedrock` endpoint allows access to Amazon Bedrock Foundation models.
 
 ### Components and Configuration
 
 #### API Gateway Routes
-- `/register` endpoint: Accepts `email`, `password`, and `fullname` in the body, interacts with a proxy lambda integration to register users to the Cognito User Pool. Returns an API Key which will be associated with the API Gateway's usage plan and stored within the Cognito user's custom `api_key` field . If an organization domain is specified in the `ORGANIZATION_DOMAIN` context variable, a pre signup lambda is provisioned to reject users not belonging to the specified domain.
+- `/register` endpoint: Accepts `email`, `password`, and `fullname` in the body, interacts with a proxy lambda integration to register users to the Cognito User Pool. Returns an API Key which will be associated with the API Gateway's usage plan and stored within the Cognito user's custom `api_key` field . If an organization domain is specified in the `ORGANIZATION_DOMAIN` context variable, a pre-signup lambda is provisioned to reject users not belonging to the specified domain.
 
-- `/login` endpoint: Accepts `email` and `password` in the body, interacts with a proxy lambda integration to authenticate the user. Returns an bearer token, containing `IdToken`, `AccessToken`, `RefreshToken` and other metadata. If the user loses their API key, they can decrypt the `IdToken` using [jwt.io](https://jwt.io/) or other libraries to retrieve the API key from the `custom:api_key` field.
+- `/login` endpoint: Accepts `email` and `password` in the body, interacts with a proxy lambda integration to authenticate the user. Returns a bearer token, containing `IdToken`, `AccessToken`, `RefreshToken` and other metadata. If the user loses their API key, they can decrypt the `IdToken` using [jwt.io](https://jwt.io/) or other libraries to retrieve the API key from the `custom:api_key` field.
 
 - `/bedrock` endpoint: Protected with a Cognito authorizer to ensure only requests with valid `Authorization` and `x-api-key` tokens in headers can access the endpoint, interacts with a proxy lambda integration. A `GET` request lists all foundation models, and a `POST` request takes `modelId` and `inferenceParameters` in the body, to invoke and return response from the foundation model.
 
